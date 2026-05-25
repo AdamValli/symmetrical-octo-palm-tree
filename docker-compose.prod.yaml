@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  db:
+    image: bitnami/mariadb:latest
+    container_name: av-h-mariadb
+    restart: always
+    environment:
+      MARIADB_DATABASE: mariadb
+      MARIADB_USER: mariadb
+      MARIADB_PASSWORD: 1234
+      MARIADB_ROOT_PASSWORD: 1234
+    volumes:
+      - db_data:/var/lib/mysql
+
+  wordpress:
+    image: bitnami/wordpress:latest
+    container_name: av-h-wp
+    depends_on:
+      - db
+    restart: always
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    environment:
+      WORDPRESS_DATABASE_HOST: db
+      WORDPRESS_DATABASE_NAME: mariadb
+      WORDPRESS_DATABASE_USER: mariadb
+      WORDPRESS_DATABASE_PASSWORD: 1234
+      MARIADB_ROOT_PASSWORD: 1234
+    volumes:
+      - wp_data:/var/www/html
+      - ./wordpress/wp-content:/var/www/html/wp-content
+volumes:
+  db_data:
+  wp_data:

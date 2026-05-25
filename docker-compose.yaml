@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  db:
+    image: mariadb:10.11
+    container_name: av-mariadb
+    restart: always
+    environment:
+      MYSQL_DATABASE: mariadb
+      MYSQL_USER: mariadb
+      MYSQL_PASSWORD: 1234
+      MYSQL_ROOT_PASSWORD: 1234
+    volumes:
+      - db_data:/var/lib/mysql
+
+  wordpress:
+    build: .
+    image: wordpress:latest
+    container_name: av-wp
+    depends_on:
+      - db
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: mariadb
+      WORDPRESS_DB_USER: mariadb
+      WORDPRESS_DB_PASSWORD: 1234
+    volumes:
+      - wp_data:/var/www/html
+      - ./wordpress/wp-content:/var/www/html/wp-content
+volumes:
+  db_data:
+  wp_data:
